@@ -30,7 +30,6 @@ If you have the `powertools` plugin installed, you may configure this over SSH:
 
 There a handful of additional optional settings:
 
-    hipchat.defaultRoom = gb
     hipchat.useProjectRooms = false
     hipchat.postPersonalRepos = false
     hipchat.postTickets = true
@@ -46,11 +45,11 @@ How are project rooms named?
 
 If project rooms are named as *hipchat.defaultRoom* -project, where *project* is the first directory element of the repository path.  If *project* is empty, the *hipchat.defaultRoom* is used.
 
-Examples:
-
 <pre>
 hipchat.defaultRoom = gb
+hipchat.defaultToken = aToken
 hipchat.useProjectRooms = true
+hipchat.gb-network.token = 12345
 </pre>
 
 - For the *network/a/b/myrepo.git* repository, the HipChat room would be *gb-network*.
