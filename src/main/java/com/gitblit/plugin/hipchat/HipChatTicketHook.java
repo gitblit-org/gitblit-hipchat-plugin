@@ -341,7 +341,10 @@ public class HipChatTicketHook extends TicketHook {
 					} else if (TicketModel.Field.topic == field) {
 						// link bugtraq matches
 						value = renderBugtraq(value, ticket.repository);
-					}
+    				} else if (TicketModel.Field.responsible == field) {
+    					// lookup display name of the user
+    					value = getDisplayName(value);
+    				}
 				}
 				sb.append(String.format("<tr><td><b>%1$s:<b/></td><td>%2$s</td></tr>\n", field.name(), value));
 			}
@@ -378,6 +381,22 @@ public class HipChatTicketHook extends TicketHook {
 			db.close();
 		}
 		return value;
+    }
+
+    protected String getDisplayName(String username) {
+    	if (StringUtils.isEmpty(username)) {
+    		return username;
+    	}
+
+		IUserManager userManager = GitblitContext.getManager(IUserManager.class);
+		UserModel user = userManager.getUserModel(username);
+		if (user != null) {
+			String displayName = user.getDisplayName();
+			if (!StringUtils.isEmpty(displayName) && !username.equals(displayName)) {
+				return displayName;
+			}
+		}
+		return username;
     }
 
     /**
