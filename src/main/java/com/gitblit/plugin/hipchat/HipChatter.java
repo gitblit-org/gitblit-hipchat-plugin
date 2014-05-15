@@ -18,8 +18,10 @@ package com.gitblit.plugin.hipchat;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
+import java.io.Serializable;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -55,7 +57,7 @@ public class HipChatter implements IManager {
 
 	final IRuntimeManager runtimeManager;
 
-	final ForkJoinPool taskPool;
+	final ExecutorService taskPool;
 
 	public static void init(IRuntimeManager manager) {
 		if (instance == null) {
@@ -69,7 +71,7 @@ public class HipChatter implements IManager {
 
 	HipChatter(IRuntimeManager runtimeManager) {
 		this.runtimeManager = runtimeManager;
-		this.taskPool = new ForkJoinPool(4);
+		this.taskPool = Executors.newCachedThreadPool();
 	}
 
 	@Override
@@ -138,7 +140,7 @@ public class HipChatter implements IManager {
 	 * @throws IOException
 	 */
 	public void sendAsync(final Payload payload) {
-		taskPool.invoke(new HipChatterTask(this, payload));
+		taskPool.submit(new HipChatterTask(this, payload));
 	}
 
 	/**
@@ -226,7 +228,7 @@ public class HipChatter implements IManager {
 		}
 	}
 
-	private static class HipChatterTask extends ForkJoinTask<Void> {
+	private static class HipChatterTask implements Serializable, Callable<Boolean> {
 
 		private static final long serialVersionUID = 1L;
 
@@ -240,16 +242,7 @@ public class HipChatter implements IManager {
 		}
 
 		@Override
-		public Void getRawResult() {
-			return null;
-		}
-
-		@Override
-		protected void setRawResult(Void value) {
-		}
-
-		@Override
-		protected boolean exec() {
+		public Boolean call() {
 			try {
 				hipChatter.send(payload);
 				return true;
