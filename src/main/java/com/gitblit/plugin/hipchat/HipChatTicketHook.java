@@ -163,7 +163,8 @@ public class HipChatTicketHook extends TicketHook {
 					/*
 					 * Rewritten patchset
 					 */
-					leadIn = String.format("%s has rewritten the patchset for %s %s (%s)", author, repo, url, change.patchset.type);
+					leadIn = String.format("%s has rewritten the patchset for %s %s (%s)",
+							author, repo, url, change.patchset.type);
 				}
 				base = change.patchset.base;
 			} else {
@@ -206,6 +207,7 @@ public class HipChatTicketHook extends TicketHook {
 						gravatarUrl, commitUrl, shortId, shortMessage);
 				sb.append(row);
 			}
+			sb.append("</tbody></table>\n");
 
 			// compare link
 			if (commits.size() > 1) {
@@ -221,9 +223,9 @@ public class HipChatTicketHook extends TicketHook {
 				} else {
 					compareText = String.format("view comparison of these %s commits", commits.size());
 				}
-				sb.append(String.format("<%s|%s>", compareUrl, compareText));
+				sb.append("<br/>\n");
+				sb.append(String.format("<a href=\"%s\">|%s</a>\n", compareUrl, compareText));
 			}
-			sb.append("</tbody></table>");
 
 			msg = sb.toString();
 
@@ -302,7 +304,7 @@ public class HipChatTicketHook extends TicketHook {
 
     	if (change.hasComment() && settings.getBoolean(Plugin.SETTING_POST_TICKET_COMMENTS, true)) {
     		// transform Markdown comment
-    		sb.append("<br/>");
+    		sb.append("<br/>\n");
     		String comment = renderMarkdown(change.comment.text, ticket.repository);
     		sb.append(comment);
     	}
@@ -310,16 +312,6 @@ public class HipChatTicketHook extends TicketHook {
     	// ensure we have some basic context fields
     	if (!filtered.containsKey(TicketModel.Field.title)) {
     		filtered.put(TicketModel.Field.title, ticket.title);
-    	}
-    	if (!filtered.containsKey(TicketModel.Field.responsible)) {
-    		if (!StringUtils.isEmpty(ticket.responsible)) {
-    			filtered.put(TicketModel.Field.responsible, ticket.responsible);
-    		}
-    	}
-    	if (!filtered.containsKey(TicketModel.Field.milestone)) {
-    		if (!StringUtils.isEmpty(ticket.milestone)) {
-    			filtered.put(TicketModel.Field.milestone, ticket.milestone);
-    		}
     	}
 
     	// sort by field ordinal
