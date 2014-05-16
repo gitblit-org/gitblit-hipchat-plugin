@@ -180,6 +180,9 @@ public class HipChatTicketHook extends TicketHook {
 			StringBuilder sb = new StringBuilder();
 			sb.append(leadIn);
 
+			// show the fields above the commit list
+			fields(sb, ticket, change, fieldExclusions);
+
 			// abbreviated commit list
 			List<RevCommit> commits = getCommits(ticket.repository, base, tip);
 			sb.append("\n<table><tbody>\n");
@@ -223,8 +226,7 @@ public class HipChatTicketHook extends TicketHook {
 				} else {
 					compareText = String.format("view comparison of these %s commits", commits.size());
 				}
-				sb.append("<br/>\n");
-				sb.append(String.format("<a href=\"%s\">|%s</a>\n", compareUrl, compareText));
+				sb.append(String.format("<a href=\"%s\">%s</a>\n", compareUrl, compareText));
 			}
 
 			msg = sb.toString();
@@ -280,7 +282,11 @@ public class HipChatTicketHook extends TicketHook {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(msg);
-		fields(sb, ticket, change, fieldExclusions);
+
+		// fields on patchset changes are output above this point
+		if (!change.hasPatchset()) {
+			fields(sb, ticket, change, fieldExclusions);
+		}
 
     	Payload payload = Payload.html(sb.toString());
 		payload.setColor(color);
