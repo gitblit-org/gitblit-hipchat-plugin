@@ -15,7 +15,9 @@
  */
 package com.gitblit.plugin.hipchat;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,6 +48,7 @@ import com.gitblit.models.RepositoryModel;
 import com.gitblit.models.TicketModel;
 import com.gitblit.models.TicketModel.Change;
 import com.gitblit.models.TicketModel.Patchset;
+import com.gitblit.models.TicketModel.Review;
 import com.gitblit.models.UserModel;
 import com.gitblit.plugin.hipchat.entity.Payload;
 import com.gitblit.plugin.hipchat.entity.Payload.Color;
@@ -71,6 +74,10 @@ public class HipChatTicketHook extends TicketHook {
 	final HipChatter hipChatter;
 
 	final IStoredSettings settings;
+
+	private final String addPattern = "<span style=\"color:darkgreen;\">+{0}</span>";
+
+	private final String delPattern = "<span style=\"color:darkred;\">-{0}</span>";
 
 	public HipChatTicketHook() {
 		super();
@@ -122,30 +129,46 @@ public class HipChatTicketHook extends TicketHook {
 		String url = String.format("<a href=\"%s\">ticket-%s</a>", getUrl(ticket), ticket.number);
 		String repo = "<b>" + StringUtils.stripDotGit(ticket.repository) + "</b>";
 		String msg = null;
-		String emoji = null;
 
 		if (change.hasReview()) {
 			/*
 			 * Patchset review
 			 */
-    		msg = String.format("%s has reviewed %s %s patchset %s-%s", author, repo, url,
-    				change.patchset.number, change.patchset.rev);
-    		switch (change.review.score) {
-    		case approved:
-    			emoji = ":white_check_mark:";
-    			break;
-    		case looks_good:
-    			emoji = "(thumbsup)";
-    			break;
-    		case needs_improvement:
-    			emoji = "(thumbsdown)";
-    			break;
-    		case vetoed:
-    			emoji = ":no_entry_sign:";
-    			break;
-    		default:
-    			break;
-    		}
+			StringBuilder sb = new StringBuilder();
+    		sb.append(String.format("%s has reviewed %s %s patchset %s-%s", author, repo, url,
+    				change.patchset.number, change.patchset.rev));
+    		sb.append("<p/>");
+
+    		Review review = change.review;
+    		String d = settings.getString(Keys.web.datestampShortFormat, "yyyy-MM-dd");
+			String t = settings.getString(Keys.web.timeFormat, "HH:mm");
+			DateFormat df = new SimpleDateFormat(d + " " + t);
+			List<Change> reviews = ticket.getReviews(ticket.getPatchset(review.patchset, review.rev));
+			sb.append("<table><thead<tr><th>Date</th><th>Reviewer</th><th>Score</th><th>Description</th></tr></thead><tbody>\n");
+			for (Change c : reviews) {
+				String name = c.author;
+				UserModel u = userManager.getUserModel(change.author);
+				if (u != null) {
+					name = u.getDisplayName();
+				}
+				String score;
+				switch (change.review.score) {
+				case approved:
+					score = MessageFormat.format(addPattern, c.review.score.getValue());
+					break;
+				case vetoed:
+					score = MessageFormat.format(delPattern, Math.abs(c.review.score.getValue()));
+					break;
+				default:
+					score = "" + c.review.score.getValue();
+				}
+				String date = df.format(c.date);
+				sb.append(String.format("<tr><td>%1$s</td><td>%2$s</td><td>%3$s</td><td>%4$s</td></tr>\n",
+						date, name, score, c.review.score.toString()));
+			}
+			sb.append("</tbody></table>");
+			msg = sb.toString();
+
 		} else if (change.hasPatchset()) {
 			/*
 			 * New Patchset
@@ -374,7 +397,7 @@ public class HipChatTicketHook extends TicketHook {
 		Repository db = repositoryManager.getRepository(repository);
 		try {
 			BugtraqProcessor bugtraq = new BugtraqProcessor(settings);
-			value = bugtraq.processPlainCommitMessage(db, repository, value);
+			value = bugtraq.processText(db, repository, value);
 		} finally {
 			db.close();
 		}
