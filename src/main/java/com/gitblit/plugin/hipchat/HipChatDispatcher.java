@@ -48,11 +48,11 @@ public class HipChatDispatcher extends DispatchCommand {
 	@CommandMetaData(name = "test", description = "Post a test message")
 	@UsageExamples(examples = {
 			@UsageExample(syntax = "${cmd}", description = "Posts a test message to the default room"),
-			@UsageExample(syntax = "${cmd} room", description = "Posts a test message to room")
+			@UsageExample(syntax = "${cmd} myRoom", description = "Posts a test message to myRoom")
 	})
 	public static class TestCommand extends SshCommand {
 
-		@Argument(index = 0, metaVar = "ROOM", usage = "Room to post message")
+		@Argument(index = 0, metaVar = "ROOM", usage = "Destination Room for message")
 		String room;
 
 		/**
@@ -78,11 +78,11 @@ public class HipChatDispatcher extends DispatchCommand {
 	@CommandMetaData(name = "send", aliases = { "post" }, description = "Asynchronously post a message")
 	@UsageExamples(examples = {
 			@UsageExample(syntax = "${cmd} -m \"'this is a test'\"", description = "Asynchronously posts a message to the default room"),
-			@UsageExample(syntax = "${cmd} room -m \"'this is a test'\"", description = "Asynchronously posts a message to room")
+			@UsageExample(syntax = "${cmd} myRoom -m \"'this is a test'\"", description = "Asynchronously posts a message to myRoom")
 	})
 	public static class MessageCommand extends SshCommand {
 
-		@Argument(index = 0, metaVar = "ROOM", usage = "Room to post message")
+		@Argument(index = 0, metaVar = "ROOM", usage = "Destination Room for message")
 		String room;
 
 		@Option(name = "--message", aliases = {"-m" }, metaVar = "-|MESSAGE", required = true)
