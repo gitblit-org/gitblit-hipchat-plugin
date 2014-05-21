@@ -38,7 +38,6 @@ import com.gitblit.Constants;
 import com.gitblit.manager.IManager;
 import com.gitblit.manager.IRuntimeManager;
 import com.gitblit.models.RepositoryModel;
-import com.gitblit.plugin.hipchat.entity.Payload;
 import com.gitblit.utils.StringUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -23,7 +23,6 @@ import org.kohsuke.args4j.Option;
 import ro.fortsoft.pf4j.Extension;
 
 import com.gitblit.manager.IRuntimeManager;
-import com.gitblit.plugin.hipchat.entity.Payload;
 import com.gitblit.servlet.GitblitContext;
 import com.gitblit.transport.ssh.commands.CommandMetaData;
 import com.gitblit.transport.ssh.commands.DispatchCommand;
