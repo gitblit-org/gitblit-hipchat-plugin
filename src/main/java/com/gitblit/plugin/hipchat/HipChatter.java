@@ -224,6 +224,8 @@ public class HipChatter implements IManager {
 			log.error(body);
 			log.error("HipChat returned:");
 			log.error(result);
+
+			throw new IOException(String.format("HipChat Error (%s): %s", rc, result));
 		}
 	}
 
