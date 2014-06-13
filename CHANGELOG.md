@@ -3,6 +3,7 @@
 ### 1.1.1
 
 - Escape commit message shortlogs and ticket fields for html
+- Display ticket title before comment when injecting ticket comments
 
 ### 1.1.0
 

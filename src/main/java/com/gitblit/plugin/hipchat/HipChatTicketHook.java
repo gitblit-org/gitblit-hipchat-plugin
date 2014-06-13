@@ -267,7 +267,11 @@ public class HipChatTicketHook extends TicketHook {
 			/*
 			 * Comment
 			 */
-			msg = String.format("%s has commented on %s %s", author, repo, url);
+			StringBuilder sb = new StringBuilder();
+			sb.append(String.format("%s has commented on %s %s", author, repo, url));
+			sb.append(String.format("<br/><table><tbody><tr><th>%s</th><td>%s</td></tr></tbody></table><br/>",
+					TicketModel.Field.title.toString(), StringUtils.escapeForHtml(ticket.title, false)));
+			msg = sb.toString();
 		}
 
 		if (msg == null) {
@@ -335,6 +339,9 @@ public class HipChatTicketHook extends TicketHook {
     		sb.append("<br/>\n");
     		String comment = renderMarkdown(change.comment.text, ticket.repository);
     		sb.append(comment);
+
+    		// title has already been rendered
+    		filtered.remove(TicketModel.Field.title);
     	}
 
     	// ensure we have some basic context fields
