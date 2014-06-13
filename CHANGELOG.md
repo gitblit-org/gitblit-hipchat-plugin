@@ -1,5 +1,9 @@
 ## Gitblit HipChat plugin
 
+### 1.1.1
+
+- Escape commit message shortlogs and ticket fields for html
+
 ### 1.1.0
 
 - Improve ticket branch push logging by listing up to 5 commits and linking to the compare pages.

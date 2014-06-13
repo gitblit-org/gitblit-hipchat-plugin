@@ -221,7 +221,7 @@ public class HipChatReceiveHook extends ReceiveHook {
 				String gravatarUrl = ActivityUtils.getGravatarThumbnailUrl(email, 16);
 				String commitUrl = getUrl(repo.name, null, commit.getName());
 				String shortId = commit.getName().substring(0, shortIdLen);
-				String shortMessage = StringUtils.trimString(commit.getShortMessage(), Constants.LEN_SHORTLOG);
+				String shortMessage = StringUtils.escapeForHtml(StringUtils.trimString(commit.getShortMessage(), Constants.LEN_SHORTLOG), false);
 				String row = String.format("<tr><td><img src=\"%s\"/></td><td><pre><a href=\"%s\">%s</a></pre></td><td>%s</td></tr>\n",
 						gravatarUrl, commitUrl, shortId, shortMessage);
 				sb.append(row);

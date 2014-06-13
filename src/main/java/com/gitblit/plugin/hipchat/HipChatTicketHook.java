@@ -364,6 +364,8 @@ public class HipChatTicketHook extends TicketHook {
     				} else if (TicketModel.Field.responsible == field) {
     					// lookup display name of the user
     					value = getDisplayName(value);
+    				} else {
+    					value = StringUtils.escapeForHtml(value, false);
     				}
 				}
 				sb.append(String.format("<tr><td><b>%1$s:<b/></td><td>%2$s</td></tr>\n", field.name(), value));
