@@ -135,7 +135,7 @@ public class HipChatTicketHook extends TicketHook {
 			 */
 			StringBuilder sb = new StringBuilder();
     		sb.append(String.format("%s has reviewed %s %s patchset %s-%s", author, repo, url,
-    				change.patchset.number, change.patchset.rev));
+    				change.review.patchset, change.review.rev));
     		sb.append("<p/>");
 
     		Review review = change.review;

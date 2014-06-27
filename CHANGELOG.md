@@ -1,5 +1,9 @@
 ## Gitblit HipChat plugin
 
+### 1.1.2
+
+- Fix patchset review events
+
 ### 1.1.1
 
 - Escape commit message shortlogs and ticket fields for html
